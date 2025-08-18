@@ -45,4 +45,4 @@ def get_download_status(download_id):
     return jsonify({'download_id': download_id, 'status': status})
 
 if __name__ == '__main__':
-    app.run(debug=True,threaded=True,port=8008)
+    app.run(debug=True,threaded=True,port=8008,host='0.0.0.0')
