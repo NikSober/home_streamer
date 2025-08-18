@@ -1,15 +1,15 @@
 from flask import Flask, request, jsonify
 from threading import Thread
-import torrent_downloader
+from torrent_downloader import Downloader
 import uuid
 import socket
 
 app = Flask(__name__)
 download_status = {}
-
+dwn = Downloader()
 def download_wrapper(torrent_url, download_id):
     try:
-        torrent_downloader.download_torrent(torrent_url)
+        dwn.download_torrent(torrent_url)
         download_status[download_id] = 'completed'
     except Exception as e:
         download_status[download_id] = f'failed: {str(e)}'
