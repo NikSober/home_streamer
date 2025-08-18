@@ -71,6 +71,7 @@ class Downloader:
             params = {
                 'save_path': download_dir,
             }
+            print("Starting download from magnet link")
             handle = lt.add_magnet_uri(ses, torrent_path, params)
             print("Starting download from magnet link")
         else:
