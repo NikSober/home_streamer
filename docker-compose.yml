@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  downloader-worker:
+    build:
+      context: ./downloader-worker
+      dockerfile: Dockerfile
+    container_name: downloader-worker
+    restart: unless-stopped
+    volumes:
+      - ./downloader-worker:/app
+    working_dir: /app
+    command: python app.py
+    ports:
+      - "8008:8008"

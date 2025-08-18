@@ -1,15 +1,5 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 USER root
-RUN dnf -y install \
-    epel-release && \
-    dnf -y install \
-    python3-devel \
-    boost-devel \
-    openssl-devel \
-    libtorrent-rasterbar \
-    libtorrent-rasterbar-devel \
-    gcc \
-    && dnf clean all
 
 WORKDIR /app
 
