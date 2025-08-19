@@ -45,6 +45,7 @@ class Downloader:
     def download_torrent(self, torrent_path: str, download_dir: str = "/tmp/torrents"):
         """
         Download a torrent using a shared libtorrent session.
+        Handles both .torrent files and magnet links correctly.
         """
         if not os.path.exists(download_dir):
             os.makedirs(download_dir)
@@ -60,11 +61,6 @@ class Downloader:
             urllib.request.urlretrieve(torrent_path, local_filename)
             torrent_path = local_filename
 
-        if not self.is_allowed_torrent_format(torrent_path=torrent_path):
-            print("Torrent file contains forbidden formats.")
-            return None
-
-        # Use the shared session
         ses = self.SESSION
 
         if torrent_path.startswith("magnet:"):
@@ -73,8 +69,19 @@ class Downloader:
             }
             print("Starting download from magnet link")
             handle = lt.add_magnet_uri(ses, torrent_path, params)
-            print("Starting download from magnet link")
+
+            # Wait for metadata
+            print("Waiting for metadata...")
+            while not handle.has_metadata():
+                for alert in ses.pop_alerts():
+                    if alert.category() & lt.alert.category_t.error_notification:
+                        print("[ERROR]", alert)
+                time.sleep(1)
+            print("Metadata received!")
         else:
+            if not self.is_allowed_torrent_format(torrent_path=torrent_path):
+                print("Torrent file contains forbidden formats.")
+                return None
             info = lt.torrent_info(torrent_path)
             handle = ses.add_torrent({'ti': info, 'save_path': download_dir})
 
