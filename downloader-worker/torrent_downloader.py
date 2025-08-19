@@ -42,7 +42,7 @@ class Downloader:
                 print(f"Error checking torrent format: {e}")
                 return False
 
-    def download_torrent(self, torrent_path: str, download_dir: str = "/tmp/torrents"):
+    def download_torrent(self, torrent_path: str, download_dir: str = "/home_streamer/torrents"):
         """
         Download a torrent using a shared libtorrent session.
         Handles both .torrent files and magnet links correctly.
@@ -52,7 +52,7 @@ class Downloader:
 
         # If torrent_path is a URL, download the file first
         if torrent_path.startswith("http://") or torrent_path.startswith("https://"):
-            torrent_files_dir = "/tmp/torrent_files"
+            torrent_files_dir = "/home_streamer/torrent_files"
             if not os.path.exists(torrent_files_dir):
                 os.makedirs(torrent_files_dir)
             local_filename = os.path.join(
@@ -106,5 +106,9 @@ class Downloader:
             time.sleep(1)
 
         print(f"\n{handle.status().name} complete!")
+        # Remove torrent to prevent seeding
+        ses.remove_torrent(handle)
+        print("Torrent removed from session to prevent seeding.")
+    print("Torrent removed from session to prevent seeding.")
 
 

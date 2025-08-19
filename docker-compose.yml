@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./downloader-worker:/app
-      - /tmp/home_streamer:/tmp
+      - /home_streamer:/home_streamer
     working_dir: /app
     command: python app.py
     ports:
