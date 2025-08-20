@@ -66,8 +66,9 @@
                 }
 
                 resultsDiv.innerHTML = '';
-                data.forEach(item => {
-                    console.log(item);
+                data.forEach(category => {
+
+                    category.forEach(item =>{
                     const box = document.createElement('div');
                     box.className = 'result-box';
                     const torrent = document.createElement('a');
@@ -95,7 +96,7 @@
                     box.appendChild(size);
                     box.appendChild(magnet);
                     resultsDiv.appendChild(box);
-                });
+                })});
             } catch (err) {
                 console.log(`finder:5000/api/all/${query}`);
                 resultsDiv.innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
