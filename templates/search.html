@@ -47,14 +47,57 @@
                 data.forEach(item => {
                     const box = document.createElement('div');
                     box.className = 'result-box';
-                    box.textContent = JSON.stringify(item, null, 2);
+                    const torrent = document.createElement('a');
+                    const name = document.createElement('a');
+                    const size = document.createElement('span');
+                    const magnet = document.createElement('a');
+
+                    torrent.href = item.Torrent;
+                    torrent.textContent = 'Download Torrent';
+                    name.href = item.Name;
+                    name.textContent = item.name;
+                    size.textContent = `Size: ${item.Size}`;
+                    magnet.href = item.Magnet;
+                    magnet.textContent = 'Magnet Link';
+
+                    const torrentBtn = document.createElement('button');
+                    torrentBtn.textContent = 'Download Torrent';
+                    torrentBtn.style.marginRight = '8px';
+                    torrentBtn.onclick = () => {
+                        customFunction(item.Torrent, item.Name, item.Magnet);
+                    };
+                    box.appendChild(torrentBtn);
+
+                    box.appendChild(name);
+                    box.appendChild(size);
+                    box.appendChild(magnet);
                     resultsDiv.appendChild(box);
                 });
             } catch (err) {
                 console.log(`finder:5000/api/all/${query}`);
                 resultsDiv.innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
             }
+
         });
+        function customFunction(torrent, name, magnet) {
+            console.log(`Torrent: ${torrent}`);
+            console.log(`Name: ${name}`);
+            console.log(`Magnet: ${magnet}`);
+            const res = await fetch(`http://brunda:8008/download-content`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ torrent_name: torrent, torrent_url, magnet })
+            }).then(res => {
+                if (!res.ok) throw new Error('Download failed');
+                return res.json();
+            }).then(data => {
+                console.log(`Download link: ${data.downloadLink}`);
+            }).catch(err => {
+                console.error(err);
+            });
+        }
     </script>
 </body>
 </html>
