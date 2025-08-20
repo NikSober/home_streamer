@@ -34,7 +34,7 @@
             const query = encodeURIComponent(input.value.trim());
             resultsDiv.innerHTML = '<em>Loading...</em>';
             try {
-                const res = await fetch(`finder:5000/api/all/${query}`);
+                const res = await fetch(`brunda:8080/api/all/${query}`);
                 console.log(`brunda:8080/api/all/${query}`);
 
                 if (!res.ok) throw new Error('API error');
