@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Finder Search</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 700px; margin: 40px auto; background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { text-align: center; }
+        #searchForm { display: flex; gap: 8px; margin-bottom: 24px; }
+        #searchInput { flex: 1; padding: 8px; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; }
+        #searchBtn { padding: 8px 16px; font-size: 1rem; border: none; background: #0078d7; color: #fff; border-radius: 4px; cursor: pointer; }
+        #results { display: flex; flex-wrap: wrap; gap: 16px; }
+        .result-box { background: #fafafa; border: 1px solid #ddd; border-radius: 6px; padding: 16px; min-width: 200px; flex: 1 1 200px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>API Finder Search</h1>
+        <form id="searchForm">
+            <input type="text" id="searchInput" placeholder="Enter keyword..." required />
+            <button type="submit" id="searchBtn">Search</button>
+        </form>
+        <div id="results"></div>
+    </div>
+    <script>
+        const form = document.getElementById('searchForm');
+        const input = document.getElementById('searchInput');
+        const resultsDiv = document.getElementById('results');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = encodeURIComponent(input.value.trim());
+            resultsDiv.innerHTML = '<em>Loading...</em>';
+            try {
+                const res = await fetch(`http://finder:5000/api/all/${query}`);
+                if (!res.ok) throw new Error('API error');
+                const data = await res.json();
+                if (!Array.isArray(data) || data.length === 0) {
+                    resultsDiv.innerHTML = '<em>No results found.</em>';
+                    return;
+                }
+                resultsDiv.innerHTML = '';
+                data.forEach(item => {
+                    const box = document.createElement('div');
+                    box.className = 'result-box';
+                    box.textContent = JSON.stringify(item, null, 2);
+                    resultsDiv.appendChild(box);
+                });
+            } catch (err) {
+                resultsDiv.innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
+            }
+        });
+    </script>
+</body>
+</html>
