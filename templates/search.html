@@ -14,6 +14,27 @@
         #results { display: flex; flex-wrap: wrap; gap: 16px; }
         .result-box { background: #fafafa; border: 1px solid #ddd; border-radius: 6px; padding: 16px; min-width: 200px; flex: 1 1 200px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     </style>
+    <script>
+        async function customFunction(torrent, name, magnet) {
+            console.log(`Torrent: ${torrent}`);
+            console.log(`Name: ${name}`);
+            console.log(`Magnet: ${magnet}`);
+            const res = await fetch(`http://brunda:8008/download-content`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ torrent_name: torrent, torrent_url, magnet })
+            }).then(res => {
+                if (!res.ok) throw new Error('Download failed');
+                return res.json();
+            }).then(data => {
+                console.log(`Download link: ${data.downloadLink}`);
+            }).catch(err => {
+                console.error(err);
+            });
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -79,25 +100,7 @@
             }
 
         });
-        function customFunction(torrent, name, magnet) {
-            console.log(`Torrent: ${torrent}`);
-            console.log(`Name: ${name}`);
-            console.log(`Magnet: ${magnet}`);
-            const res = await fetch(`http://brunda:8008/download-content`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ torrent_name: torrent, torrent_url, magnet })
-            }).then(res => {
-                if (!res.ok) throw new Error('Download failed');
-                return res.json();
-            }).then(data => {
-                console.log(`Download link: ${data.downloadLink}`);
-            }).catch(err => {
-                console.error(err);
-            });
-        }
+        
     </script>
 </body>
 </html>
