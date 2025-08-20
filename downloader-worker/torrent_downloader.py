@@ -42,7 +42,7 @@ class Downloader:
                 print(f"Error checking torrent format: {e}")
                 return False
 
-    def download_torrent(self, torrent_path: str, download_dir: str = "/home_streamer/torrents"):
+    def download_torrent(self, torrent_path: str, download_dir: str = "/home_streamer/torrents", is_tv_show: bool = False):
         """
         Download a torrent using a shared libtorrent session.
         Handles both .torrent files and magnet links correctly.

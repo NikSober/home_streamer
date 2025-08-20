@@ -14,6 +14,32 @@
         #results { display: flex; flex-wrap: wrap; gap: 16px; }
         .result-box { background: #fafafa; border: 1px solid #ddd; border-radius: 6px; padding: 16px; min-width: 200px; flex: 1 1 200px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     </style>
+    <script>
+        async function customFunction(torrent, name, magnet, torrent,is_tv_show) {
+            try {
+                let torrent_url = magnet;
+                if (torrent_url == null){
+                    torrent_url = torrent;
+                }
+                const res = await fetch('/download-content', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ "torrent_name": torrent, "torrent_url": torrent_url ,"is_tv_show": is_tv_show })
+                });
+                if (!res.ok) throw new Error('Download failed');
+                const data = await res.json();
+                // Display a message or result to the user
+                alert('Download started!');
+                // Optionally, display more info in the UI:
+                // document.getElementById('results').insertAdjacentHTML('afterbegin', `<div class="result-box">Download started for: ${name}</div>`);
+            } catch (err) {
+                alert('Error: ' + err.message);
+                console.error(err);
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -34,24 +60,70 @@
             const query = encodeURIComponent(input.value.trim());
             resultsDiv.innerHTML = '<em>Loading...</em>';
             try {
-                const res = await fetch(`http://finder:5000/api/all/${query}`);
+                const res = await fetch(`http://brunda:8080/api/all/${query}`);
+                console.log(`brunda:8080/api/all/${query}`);
+
                 if (!res.ok) throw new Error('API error');
                 const data = await res.json();
                 if (!Array.isArray(data) || data.length === 0) {
                     resultsDiv.innerHTML = '<em>No results found.</em>';
                     return;
                 }
+
                 resultsDiv.innerHTML = '';
-                data.forEach(item => {
+                data.forEach(category => {
+
+                    category.forEach(item =>{
                     const box = document.createElement('div');
                     box.className = 'result-box';
-                    box.textContent = JSON.stringify(item, null, 2);
+                    const torrent = document.createElement('a');
+                    const name = document.createElement('a');
+                    const size = document.createElement('span');
+                    const magnet = document.createElement('a');
+                    const is_tv_show = document.createElement('input');
+                    is_tv_show.type = 'checkbox';
+                    is_tv_show.id = `tvshow-${item.Url}`;
+                    is_tv_show.name = 'is_tv_show';
+                    const label = document.createElement('label');
+                    label.htmlFor = is_tv_show.id;
+                    label.textContent = 'TV Show';
+                    box.appendChild(is_tv_show);
+                    box.appendChild(label);
+
+                    torrent.href = item.Torrent;
+                    torrent.textContent = 'Download Torrent';
+                    name.href = item.Url;
+                    name.textContent = item.Url;
+                    size.textContent = `Size: ${item.Size}`;
+                    magnet.href = item.Magnet;
+                    magnet.textContent = 'Magnet Link';
+
+                    const torrentBtn = document.createElement('button');
+                    torrentBtn.textContent = 'Download Torrent to server';
+                    torrentBtn.style.marginRight = '8px';
+                    torrentBtn.onclick = () => {
+                        customFunction(
+                            item.Torrent,
+                            item.Name,
+                            item.Magnet,
+                            item.Torrent,
+                            is_tv_show.checked
+                        );
+                    };
+                    box.appendChild(torrentBtn);
+
+                    box.appendChild(name);
+                    box.appendChild(size);
+                    box.appendChild(magnet);
                     resultsDiv.appendChild(box);
-                });
+                })});
             } catch (err) {
+                console.log(`finder:5000/api/all/${query}`);
                 resultsDiv.innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
             }
+
         });
+        
     </script>
 </body>
 </html>

@@ -7,9 +7,12 @@ import socket
 app = Flask(__name__)
 download_status = {}
 dwn = Downloader()
-def download_wrapper(torrent_url, download_id):
+def download_wrapper(torrent_url, download_id, is_tv_show):
     try:
-        dwn.download_torrent(torrent_url)
+        if is_tv_show:
+            dwn.download_torrent(torrent_url=torrent_url, download_dir='/home_streamer/torrents/TV Shows')
+        else:
+            dwn.download_torrent(torrent_url=torrent_url, download_dir='/home_streamer/torrents/Movies')
         download_status[download_id] = 'completed'
     except Exception as e:
         download_status[download_id] = f'failed: {str(e)}'
@@ -32,9 +35,11 @@ def download_content():
     if not data.get('torrent_name') or not data.get('torrent_url'):
         return jsonify({'error': 'Missing torrent name or URL'}), 400
     torrent_url = data['torrent_url']
+    is_tv_show = data['is_tv_show']
+
     download_id = str(uuid.uuid4())
     download_status[download_id] = 'in_progress'
-    Thread(target=download_wrapper, args=(torrent_url, download_id)).start()
+    Thread(target=download_wrapper, args=(torrent_url, download_id, is_tv_show)).start()
     return jsonify({'status': 'Download started', 'download_id': download_id}), 202
 
 @app.route('/download-status/<download_id>', methods=['GET'])
