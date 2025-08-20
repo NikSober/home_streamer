@@ -64,8 +64,10 @@
                     resultsDiv.innerHTML = '<em>No results found.</em>';
                     return;
                 }
+
                 resultsDiv.innerHTML = '';
                 data.forEach(item => {
+                    console.log(item);
                     const box = document.createElement('div');
                     box.className = 'result-box';
                     const torrent = document.createElement('a');
