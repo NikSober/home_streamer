@@ -19,7 +19,7 @@
             console.log(`Torrent: ${torrent}`);
             console.log(`Name: ${name}`);
             console.log(`Magnet: ${magnet}`);
-            const res = await fetch(`http://brunda:5050/download-content`, {
+            const res = await fetch(`/download-content`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
