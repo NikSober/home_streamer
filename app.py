@@ -12,6 +12,7 @@ def search():
 @app.route('/download-content', methods=['POST'])
 def reroute():
     data = request.json
+    print(data)
     response = requests.post('http://downloader-worker:8008/download-content', json=data)
     return jsonify(response.json()), response.status_code
 if __name__ == '__main__':
