@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
+import requests
 app = Flask(__name__)
 
 @app.route('/')
@@ -8,6 +9,10 @@ def home():
 @app.route('/search')
 def search():
     return render_template('search.html')
-
+@app.route('/download-content', methods=['POST'])
+def reroute():
+    data = request.json
+    response = requests.post('http://download-worker:8008/download-content', json=data)
+    return jsonify(response.json()), response.status_code
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5050)

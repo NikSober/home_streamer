@@ -19,7 +19,7 @@
             console.log(`Torrent: ${torrent}`);
             console.log(`Name: ${name}`);
             console.log(`Magnet: ${magnet}`);
-            const res = await fetch(`http://brunda:8008/download-content`, {
+            const res = await fetch(`http://brunda:5050/download-content`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -79,7 +79,7 @@
                     torrent.href = item.Torrent;
                     torrent.textContent = 'Download Torrent';
                     name.href = item.Url;
-                    name.textContent = item.Name;
+                    name.textContent = item.Url;
                     size.textContent = `Size: ${item.Size}`;
                     magnet.href = item.Magnet;
                     magnet.textContent = 'Magnet Link';
