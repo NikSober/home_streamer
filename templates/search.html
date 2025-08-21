@@ -15,24 +15,29 @@
         .result-box { background: #fafafa; border: 1px solid #ddd; border-radius: 6px; padding: 16px; min-width: 200px; flex: 1 1 200px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     </style>
     <script>
-        async function customFunction(torrent, name, magnet) {
-            console.log(`Torrent: ${torrent}`);
-            console.log(`Name: ${name}`);
-            console.log(`Magnet: ${magnet}`);
-            const res = await fetch(`/download-content`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ "torrent_name": torrent, "torrent_url": magnet })
-            }).then(res => {
+        async function customFunction(torrent, name, magnet, torrent) {
+            try {
+                let torrent_url = magnet;
+                if (torrent_url == null){
+                    torrent_url = torrent;
+                }
+                const res = await fetch('/download-content', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ "torrent_name": torrent, "torrent_url": torrent_url })
+                });
                 if (!res.ok) throw new Error('Download failed');
-                return res.json();
-            }).then(data => {
-                console.log(`Download link: ${data.downloadLink}`);
-            }).catch(err => {
+                const data = await res.json();
+                // Display a message or result to the user
+                alert('Download started!');
+                // Optionally, display more info in the UI:
+                // document.getElementById('results').insertAdjacentHTML('afterbegin', `<div class="result-box">Download started for: ${name}</div>`);
+            } catch (err) {
+                alert('Error: ' + err.message);
                 console.error(err);
-            });
+            }
         }
     </script>
 </head>
@@ -85,10 +90,10 @@
                     magnet.textContent = 'Magnet Link';
 
                     const torrentBtn = document.createElement('button');
-                    torrentBtn.textContent = 'Download Torrent';
+                    torrentBtn.textContent = 'Download Torrent to server';
                     torrentBtn.style.marginRight = '8px';
                     torrentBtn.onclick = () => {
-                        customFunction(item.Torrent, item.Name, item.Magnet);
+                        customFunction(item.Torrent, item.Name, item.Magnet,item.Torrent);
                     };
                     box.appendChild(torrentBtn);
 

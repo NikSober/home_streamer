@@ -12,7 +12,7 @@ def search():
 @app.route('/download-content', methods=['POST'])
 def reroute():
     data = request.json
-    response = requests.post('http://torrent-downloader:8008/download-content', json=data)
+    response = requests.post('http://downloader-worker:8008/download-content', json=data)
     return jsonify(response.json()), response.status_code
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5050)
