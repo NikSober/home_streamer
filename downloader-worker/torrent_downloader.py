@@ -21,7 +21,7 @@ class Downloader:
             """
             allowed_exts = {
                 ".mp4", ".mkv", ".avi", ".mov", ".flv", ".wmv", ".webm", ".mp3", ".aac", ".flac",
-                ".wav", ".ogg", ".m4a", ".iso", ".jpg", ".jpeg", ".png", ".gif",".14-x86_64-checksum"
+                ".wav", ".ogg", ".m4a", ".iso", ".jpg", ".jpeg", ".png", ".gif",".14-x86_64-checksum","txt"
             }
             forbidden_exts = {
                 ".exe", ".bat", ".sh", ".msi", ".apk", ".com", ".scr", ".cmd", ".js", ".jar", ".ps1"

@@ -8,11 +8,12 @@ app = Flask(__name__)
 download_status = {}
 dwn = Downloader()
 def download_wrapper(torrent_url, download_id, is_tv_show):
+    exit_status = ""
     try:
         if is_tv_show:
-            dwn.download_torrent(torrent_url=torrent_url, download_dir='/home_streamer/torrents/TV Shows')
+            exit_status = dwn.download_torrent(torrent_url=torrent_url, download_dir='/home_streamer/torrents/TV Shows')
         else:
-            dwn.download_torrent(torrent_url=torrent_url, download_dir='/home_streamer/torrents/Movies')
+            exit_status = dwn.download_torrent(torrent_url=torrent_url, download_dir='/home_streamer/torrents/Movies')
         download_status[download_id] = 'completed'
     except Exception as e:
         download_status[download_id] = f'failed: {str(e)}'
