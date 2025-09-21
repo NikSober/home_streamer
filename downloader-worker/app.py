@@ -3,18 +3,24 @@ from threading import Thread
 from torrent_downloader import Downloader
 import uuid
 import socket
+from content_browser import ContentBrowser
+import subprocess
 
 app = Flask(__name__)
 download_status = {}
+download_exit_message = {}
+COMMAND = "filebot -rename \"/home_streamer/tmp\" --output \"/home_streamer/torrents\" --format \"{plex}\""
 dwn = Downloader()
-def download_wrapper(torrent_url, download_id, is_tv_show):
+def download_wrapper(torrent_url, download_id):
     exit_status = ""
     try:
-        if is_tv_show:
-            exit_status = dwn.download_torrent(torrent_url=torrent_url, download_dir='/home_streamer/torrents/TV Shows')
-        else:
-            exit_status = dwn.download_torrent(torrent_url=torrent_url, download_dir='/home_streamer/torrents/Movies')
+        exit_status = dwn.download_torrent(torrent_path=torrent_url, download_dir='/home_streamer/tmp')
         download_status[download_id] = 'completed'
+        download_exit_message[download_id] = exit_status
+        if exit_status == 0:
+            subprocess.call(COMMAND, shell=True)
+
+
     except Exception as e:
         download_status[download_id] = f'failed: {str(e)}'
 
@@ -36,11 +42,12 @@ def download_content():
     if not data.get('torrent_name') or not data.get('torrent_url'):
         return jsonify({'error': 'Missing torrent name or URL'}), 400
     torrent_url = data['torrent_url']
-    is_tv_show = data['is_tv_show']
 
     download_id = str(uuid.uuid4())
     download_status[download_id] = 'in_progress'
-    Thread(target=download_wrapper, args=(torrent_url, download_id, is_tv_show)).start()
+    download_exit_message[download_id] = ''
+
+    Thread(target=download_wrapper, args=(torrent_url, download_id)).start()
     return jsonify({'status': 'Download started', 'download_id': download_id}), 202
 
 @app.route('/download-status/<download_id>', methods=['GET'])
@@ -50,5 +57,22 @@ def get_download_status(download_id):
         return jsonify({'error': 'Invalid download_id'}), 404
     return jsonify({'download_id': download_id, 'status': status})
 
+
+@app.route('/list-tv-shows', methods=['GET'])
+def list_tv_shows():
+    shows = ContentBrowser.list_tv_shows()
+    return jsonify(shows), 200
+
+@app.route('/list-movies', methods=['GET'])
+def list_movies():
+    movies = ContentBrowser.list_movies()
+    return jsonify(movies), 200
+
+@app.route('/list-all-content', methods=['GET'])
+def list_all_content():
+    content = ContentBrowser.list_all_content()
+    return jsonify(content), 200
+
 if __name__ == '__main__':
     app.run(debug=True,threaded=True,port=8008,host='0.0.0.0')
+
